@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 
 import { CategoryDropdown } from "./category-dropdown"
 import { CustomCategory } from "../type"
+import { CategoriesSidebar } from "./categories-sidebar"
 
 interface Props {
     data: CustomCategory[]
@@ -21,6 +22,7 @@ export const Categories = ({ data }: Props) => {
 
     const [visibleCount, serVisibleCount] = useState(data.length)
     const [isAnyHovered, setIsAnyHovered] = useState(false)
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
     const activeCategory = "all"
 
@@ -57,6 +59,7 @@ export const Categories = ({ data }: Props) => {
 
     return (
         <div className="relative w-full">
+            <CategoriesSidebar open={isSidebarOpen} onOpenChange={setIsSidebarOpen} data={data}/>
             {/* hidden to mesure*/}
             <div
                 ref={mesureRef}
@@ -94,8 +97,9 @@ export const Categories = ({ data }: Props) => {
                 }
                 <div ref={viewAllRef} className="shrink-0">
                     <Button
-                        className={cn("h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black",
-                        isActiveCategoryHidden && !isAnyHovered && "bg-white border-primary")}
+                        className={cn("h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-primary hover:border-primary text-black",
+                        isActiveCategoryHidden && !isAnyHovered && "bg-white border-")}
+                        onClick={() => setIsSidebarOpen(true)}
                     >
                         View All
                         <ListFilterIcon className="ml-2" />
