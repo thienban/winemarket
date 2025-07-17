@@ -1,9 +1,9 @@
-import Link from "next/link";
+import { CategoriesGetManyOutput } from "@/modules/categories/type/type";
 import { Category } from "@/payload-types";
-import { CustomCategory } from "../type";
+import Link from "next/link";
 
 interface Props {
-    category: CustomCategory
+    category: CategoriesGetManyOutput[1]
     isOpen: boolean
     position: { top: number; left: number }
 }
@@ -13,8 +13,6 @@ export const SubcategoryMenu = ({ category, isOpen, position }: Props) => {
     if (!isOpen || !category.subcategories || category.subcategories?.length === 0) {
         return null
     }
-
-    console.log(category)
 
     const backgroundColor = category.color || "#F5F5F5"
     return (
@@ -27,7 +25,7 @@ export const SubcategoryMenu = ({ category, isOpen, position }: Props) => {
                 <div>
                     {category.subcategories?.map((subcategory: Category) => (
                         <Link key={subcategory.slug}
-                            href={`/${category.slug}/${subcategory.slug}`	}
+                            href={`/${category.slug}/${subcategory.slug}`}
                             className="w-full text-left p-4 hover:bg-black hover:text-white flex justify-between items-center underline font-medium">
                             {subcategory.name}
                         </Link>
