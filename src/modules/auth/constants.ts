@@ -1,1 +1,1 @@
-export const AUTH_COOKIE = "winemarket-payload-token"
+export const AUTH_COOKIE = "payload-token"

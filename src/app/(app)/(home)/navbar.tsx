@@ -2,12 +2,12 @@
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { MenuIcon } from "lucide-react"
 import { Poppins } from "next/font/google"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { NavbarSidebar } from "./navbar-sidebar"
 import { useState } from "react"
-import { MenuIcon } from "lucide-react"
+import { NavbarSidebar } from "./navbar-sidebar"
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -94,14 +94,14 @@ export const Navbar = () => {
                     asChild
                     variant="secondary"
                     className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-white hover:bg-primary transition-colors text-lg">
-                    <Link href="/sign-in">
+                    <Link prefetch href="/sign-in">
                         login
                     </Link>
                 </Button>
                 <Button
                     asChild
                     className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-black text-white hover:text-black hover:bg-primary transition-colors text-lg">
-                    <Link href="/sign-up">
+                    <Link prefetch href="/sign-up">
                         start selling
                     </Link>
                 </Button>

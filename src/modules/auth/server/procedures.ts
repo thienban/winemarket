@@ -2,9 +2,9 @@ import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
 import { cookies as getCookies, headers as getHeaders } from "next/headers";
 import { BasePayload } from "payload";
-import z from "zod";
 
 import { AUTH_COOKIE } from "../constants";
+import { loginSchema, registerSchema } from "../schema";
 
 export const authRouter = createTRPCRouter({
     session: baseProcedure.query(async ({ ctx }) => {
@@ -15,21 +15,26 @@ export const authRouter = createTRPCRouter({
         return session;
     }),
     register: baseProcedure
-        .input(
-            z.object({
-                email: z.string(),
-                password: z.string().min(8),
-                username: z.string()
-                    .min(3, "User must be at least 3 caracter")
-                    .max(63, "User must be lest than 63 caracter")
-                    .regex(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/, "User must be lowercase, numbers and hypens. It must start and end with letter or number")
-                    .refine(
-                        (val) => !val.includes("--"),
-                        "User must not have double hypens"
-                    )
-                    .transform((val) => val.toLowerCase())
+        .input(registerSchema).mutation(async ({ ctx, input }) => {
+
+            const username = await ctx.payload.find({
+                collection: "users",
+                limit: 1,
+                where: {
+                    username: {
+                        equals: input.username
+                    }
+                }
             })
-        ).mutation(async ({ ctx, input }) => {
+
+            const existingUsername = username.docs[0]
+
+            if (existingUsername) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "Username already exists"
+                })
+            }
             await ctx.payload.create({
                 collection: "users",
                 data: {
@@ -42,17 +47,13 @@ export const authRouter = createTRPCRouter({
             await login(ctx, input);
         }),
     login: baseProcedure
-        .input(
-            z.object({
-                email: z.string(),
-                password: z.string().min(8),
-            })
-        ).mutation(async ({ ctx, input }) => {
+        .input(loginSchema)
+        .mutation(async ({ ctx, input }) => {
             const data = await login(ctx, input);
 
             return data;
         }),
-    logout: baseProcedure.mutation(async ({ ctx }) => {
+    logout: baseProcedure.mutation(async () => {
         const cookies = await getCookies();
 
         cookies.delete(AUTH_COOKIE);
