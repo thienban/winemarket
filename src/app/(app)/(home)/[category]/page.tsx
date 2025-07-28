@@ -1,7 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { Textarea } from "@/components/ui/textarea";
+import { Suspense } from "react";
+
+import { getQueryClient, trpc } from "@/trpc/server";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+
+import { ProductList, ProductListSkeleton } from "@/modules/products/ui/components/product-list";
 
 interface Props {
     params: Promise<{
@@ -9,31 +11,24 @@ interface Props {
     }>
 }
 
-const Foo = async ({ params }: Props) => {
+const Page = async ({ params }: Props) => {
 
-    const { category } = await params;
+    const { category } = await params
+
+    const queryClient = getQueryClient()
+    void queryClient.prefetchQuery(
+        trpc.products.getMany.queryOptions({
+            category
+        })
+    )
+
     return (
-        <div className="p-4">
-
-            <div className="flex flex-col gap-y-4">
-                <p className="text-rose-400">Test</p>
-                <div>
-                    Category: {category}
-                </div>
-                <div>
-                    <Button variant={"elevated"}>Button</Button>
-                </div>
-                <div>
-                    <Progress value={50} />
-                </div> <div>
-                    <Input placeholder="TTTTT" />
-                </div>
-                <div>
-                    <Textarea placeholder="TTTTT" />
-                </div>
-            </div>
-        </div>
+        <HydrationBoundary state={dehydrate(queryClient)}>
+            <Suspense fallback={<ProductListSkeleton />}>
+                <ProductList category={category} />
+            </Suspense>
+        </HydrationBoundary>
     );
 }
 
-export default Foo;
+export default Page;
