@@ -203,7 +203,7 @@ export interface Product {
    */
   tax: '5,5%' | '10%' | '20%' | '30%' | '40%' | '50%';
   category?: (string | null) | Category;
-  images?: (string | null) | Media;
+  image?: (string | null) | Media;
   refundPolicy?: ('30-day' | '14-day' | '7-day' | '1-day' | 'no-refunds') | null;
   tags?: (string | Tag)[] | null;
   updatedAt: string;
@@ -354,7 +354,7 @@ export interface ProductsSelect<T extends boolean = true> {
   currency?: T;
   tax?: T;
   category?: T;
-  images?: T;
+  image?: T;
   refundPolicy?: T;
   tags?: T;
   updatedAt?: T;
