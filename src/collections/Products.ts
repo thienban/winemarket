@@ -44,7 +44,7 @@ export const Products: CollectionConfig = {
         hasMany: false
     },
     {
-        name: "images",
+        name: "image",
         type: "upload",
         relationTo: "media"
     },
