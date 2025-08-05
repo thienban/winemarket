@@ -1,41 +1,34 @@
-"use client";
 
-import { useTRPC } from '@/trpc/client';
-import { useQuery } from '@tanstack/react-query';
+import { getQueryClient, trpc } from "@/trpc/server";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { SearchParams } from "nuqs/server";
 
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { Textarea } from "@/components/ui/textarea";
+import { DEFAULT_LIMIT } from "@/constants";
+import { loadProductFilters } from "@/modules/products/search-params";
+import { ProductListView } from "@/modules/products/ui/views/product-list-view";
 
-export default function Home() {
+interface Props {
+  searchParams: Promise<SearchParams>
+}
 
-  const trpc = useTRPC();
-  const { data } = useQuery(trpc.auth.session.queryOptions());
+const Page = async ({ searchParams }: Props) => {
+
+  const filters = await loadProductFilters(searchParams)
+
+  const queryClient = getQueryClient()
+  void queryClient.prefetchInfiniteQuery(
+    trpc.products.getMany.infiniteQueryOptions({
+      ...filters,
+      limit: DEFAULT_LIMIT,
+
+    })
+  )
 
   return (
-    <div className="p-4">
-      <div className="flex flex-col gap-y-4">
-        <p className="text-rose-400">Test</p>
-        <div>
-          <Button variant={"primElevated"}>{JSON.stringify(data?.user, null, 2)}</Button>
-        </div>
-        <div>
-          <Button variant={"elevated"}>Button</Button>
-        </div>
-        <div>
-          <Progress value={50} />
-        </div> <div>
-          <Input placeholder="TTTTT" />
-        </div>
-        <div>
-          <Textarea placeholder="TTTTT" />
-        </div>
-        <div>
-          <Checkbox />
-        </div>
-      </div>
-    </div>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ProductListView />
+    </HydrationBoundary >
   );
 }
+
+export default Page;

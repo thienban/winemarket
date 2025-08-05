@@ -67,12 +67,6 @@ export const productsRouter = createTRPCRouter({
                     }
                 })
 
-                if (input.tags && input.tags.length > 0) {
-                    where["tags.name"] = {
-                        in: input.tags
-                    }
-                }
-
                 const formattedData = categoriesData.docs.map((doc) => ({
                     ...doc,
                     subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
@@ -93,7 +87,13 @@ export const productsRouter = createTRPCRouter({
                         in: [parentCategory.slug, ...subcategoriesSlugs]
                     }
                 }
+            }
 
+            // Move this outside the category if block so it works independently
+            if (input.tags && input.tags.length > 0) {
+                where["tags.name"] = {
+                    in: input.tags
+                }
             }
 
             const data = await ctx.payload.find({
