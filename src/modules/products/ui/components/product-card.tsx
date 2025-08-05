@@ -1,13 +1,16 @@
 import { StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+import { generateTenantUrl } from "@/lib/utils";
 
 interface Props {
     id: string;
     name: string;
     imageUrl?: string | null;
-    authorUserName: string;
-    authorImageUrl?: string | null;
+    tenantSlug: string;
+    tenantImageUrl?: string | null;
     reviewRating: number;
     reviewCount: number;
     price: number;
@@ -17,12 +20,21 @@ interface Props {
 export const ProductCard = ({ id,
     name,
     imageUrl,
-    authorUserName,
-    authorImageUrl,
+    tenantSlug,
+    tenantImageUrl,
     reviewRating,
     reviewCount,
     price,
     currency }: Props) => {
+
+    const router = useRouter()
+
+    const handleUserClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation()
+        e.preventDefault()
+
+        router.push(generateTenantUrl(tenantSlug))
+    }
     return (
         <Link href={`/product/${id}`} id={id}>
             <div className="hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-shadow
@@ -40,19 +52,19 @@ export const ProductCard = ({ id,
                         {name}
                     </h2>
                     <div className="flex items-center gap-2"
-                        onClick={() => { }}
+                        onClick={handleUserClick}
                     >
-                        {authorImageUrl && (
+                        {tenantImageUrl && (
                             <Image
-                                alt={authorUserName}
-                                src={authorImageUrl}
+                                alt={tenantSlug}
+                                src={tenantImageUrl}
                                 width={16}
                                 height={16}
                                 className="rounded full border shrink-0 size-[16px]"
                             />
                         )}
                         <p className="text-sm underline font-medium">
-                            {authorUserName}
+                            {tenantSlug}
                         </p>
                     </div>
                     {reviewCount > 0 && (

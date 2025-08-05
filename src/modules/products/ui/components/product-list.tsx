@@ -2,19 +2,24 @@
 
 import { InboxIcon } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { DEFAULT_LIMIT } from "@/constants"
 import { useTRPC } from "@/trpc/client"
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
+
+import { Button } from "@/components/ui/button"
+import { DEFAULT_LIMIT } from "@/constants"
+import { cn } from "@/lib/utils"
 
 import { useProductFilters } from "../../hooks/use-product-filters"
 import { ProductCard, ProductCardSkeleton } from "./product-card"
 
 interface Props {
-    category?: string
+    category?: string,
+    tenantSlug?: string,
+    narrowView?: boolean
 }
 
-export const ProductList = ({ category }: Props) => {
+export const ProductList = ({ category, tenantSlug, narrowView }: Props) => {
+
 
     const [filters] = useProductFilters()
 
@@ -25,8 +30,9 @@ export const ProductList = ({ category }: Props) => {
         fetchNextPage
     } = useSuspenseInfiniteQuery(trpc.products.getMany.infiniteQueryOptions(
         {
-            category,
             ...filters,
+            category,
+            tenantSlug,
             limit: DEFAULT_LIMIT
         },
         {
@@ -49,8 +55,8 @@ export const ProductList = ({ category }: Props) => {
 
     return (
         <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3
-        2xl:grid-cols-4 gap-4">
+            <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4"
+                , narrowView && "lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3")}>
                 {data?.pages.flatMap(page => page.docs).map((product) => (
                     <div key={product.id}>
                         <ProductCard
@@ -58,8 +64,8 @@ export const ProductList = ({ category }: Props) => {
                             id={product.id}
                             name={product.name}
                             imageUrl={product.image?.url}
-                            authorUserName={"Antonio"}
-                            authorImageUrl={undefined}
+                            tenantSlug={product.tenant?.slug}
+                            tenantImageUrl={product.tenant?.image?.url}
                             reviewRating={3}
                             reviewCount={5}
                             price={product.price}
@@ -86,10 +92,11 @@ export const ProductList = ({ category }: Props) => {
     )
 }
 
-export const ProductListSkeleton = () => {
+export const ProductListSkeleton = ({ narrowView }: Props) => {
+
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3
-        2xl:grid-cols-4 gap-4">
+        <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4"
+            , narrowView && "lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3")}>
             {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => {
                 return <ProductCardSkeleton key={index} />
             })}
