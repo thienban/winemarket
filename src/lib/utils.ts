@@ -8,3 +8,10 @@ export function cn(...inputs: ClassValue[]) {
 export function generateTenantUrl(tenantSlug: string) {
   return `/tenants/${tenantSlug}`
 }
+
+export function formatCurrency(value: number | string, currency: string = "USD") {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency,
+  }).format(Number(value))
+}
