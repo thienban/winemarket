@@ -9,7 +9,11 @@ export function generateTenantUrl(tenantSlug: string) {
   return `/tenants/${tenantSlug}`
 }
 
-export function formatCurrency(value: number | string, currency: string = "USD") {
+export function formatCurrency(value: number | string | undefined, currency: string = "USD") {
+  if (!value) {
+    return ""
+  }
+  
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: currency,

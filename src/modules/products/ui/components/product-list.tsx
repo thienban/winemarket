@@ -1,7 +1,5 @@
 "use client"
 
-import { InboxIcon } from "lucide-react"
-
 import { useTRPC } from "@/trpc/client"
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query"
 
@@ -11,6 +9,7 @@ import { cn } from "@/lib/utils"
 
 import { useProductFilters } from "../../hooks/use-product-filters"
 import { ProductCard, ProductCardSkeleton } from "./product-card"
+import { EmptyProduct } from "./empty-product"
 
 interface Props {
     category?: string,
@@ -43,11 +42,7 @@ export const ProductList = ({ category, tenantSlug, narrowView }: Props) => {
 
     if (data?.pages[0]?.docs && data.pages[0].docs.length === 0) {
         return (
-            <div className="border border-black border-dashed flex items-center justify-center p-8
-        flex-col gap-y-4 bg-white w-full rounded-lg">
-                <InboxIcon />
-                <p className="text-base font-medium">No products found</p>
-            </div>
+            <EmptyProduct />
         )
     }
 
