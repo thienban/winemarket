@@ -131,8 +131,6 @@ export const productsRouter = createTRPCRouter({
                 limit: input.limit
             })
 
-            console.log(JSON.stringify(data))
-
             return {
                 ...data,
                 docs: data.docs.map((doc) => ({
