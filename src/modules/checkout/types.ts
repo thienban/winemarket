@@ -1,0 +1,22 @@
+import type Stripe from "stripe"
+
+export type ProductMetaData = {
+    stripeAccountId: string,
+    id: string,
+    name: string,
+    price: number
+}
+
+export type CheckoutMetaData = {
+    userId: string,
+    stripeAccountId: string,
+}
+
+export type ExpandedLineItem = Stripe.LineItem & {
+    price: Stripe.Price & {
+        product: Stripe.Product & {
+            metadata: ProductMetaData
+        }
+    }
+}
+
