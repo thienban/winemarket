@@ -5,17 +5,17 @@ import { Button } from "@/components/ui/button";
 interface Props {
     total?: number;
     currency?: string;
-    onCheckout: () => void;
+    onPurchase: () => void;
     isCanceled?: boolean;
-    isPending?: boolean
+    isDisabled?: boolean;
 }
 
 export const CheckoutSidebar = ({
     total,
     currency,
-    onCheckout,
+    onPurchase,
     isCanceled,
-    isPending
+    isDisabled
 }: Props) => {
 
     return (
@@ -34,8 +34,8 @@ export const CheckoutSidebar = ({
             <div className="p-4 flex items-center justify-center">
                 <Button
                     variant="elevated"
-                    onClick={onCheckout}
-                    disabled={isCanceled || isPending}
+                    onClick={onPurchase}
+                    disabled={isCanceled || isDisabled}
                     size="lg"
                     className="text-base w-full text-white bg-primary hover:bg-pink-400 hover:text-primary"
                 >
