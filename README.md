@@ -1,5 +1,12 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+This is a project from youtube tutorial [codewithantonio](https://www.youtube.com/@codewithantonio)
+
+## Part 1
+[`Build and Deploy a Multi-Vendor E-Commerce Marketplace with Nextjs, React, Stripe Connect, MongoDB`](https://www.youtube.com/watch?v=6fXNWBFPfRM).
+## Part 2
+[`Build and Deploy a Multi Vendor E Commerce With Nextjs, React & Stripe Connect`](https://www.youtube.com/watch?v=dllIBXa0nlE&t=10501s).
+
 ## Getting Started
 
 First, run the development server:
