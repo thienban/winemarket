@@ -1,12 +1,13 @@
+import { headers as getHeaders } from "next/headers";
 import { Sort, Where } from "payload";
 import z from "zod";
-import { headers as getHeaders } from "next/headers";
 
 import { DEFAULT_LIMIT } from "@/constants";
 import { Category, Media, Tenant } from "@/payload-types";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
 import { sortValues } from "../search-params";
+import { averageReviewRating } from "@/modules/utils/utils";
 
 export const productsRouter = createTRPCRouter({
     getOne: baseProcedure
@@ -51,11 +52,50 @@ export const productsRouter = createTRPCRouter({
                 isPurchased = !!ordersData.docs[0]
             }
 
+            const reviews = await ctx.payload.find({
+                collection: "reviews",
+                pagination: false,
+                where: {
+                    product: {
+                        equals: input.id
+                    }
+                }
+            })
+
+            const reviewRating = averageReviewRating(reviews.docs)
+
+            const ratingDistribution: Record<number, number> = {
+                5: 0,
+                4: 0,
+                3: 0,
+                2: 0,
+                1: 0,
+            }
+
+            if (reviews.totalDocs > 0) {
+                reviews.docs.forEach((review) => {
+                    const rating = review.rating
+
+                    if (rating >= 1 && rating <= 5) {
+                        ratingDistribution[rating] = (ratingDistribution[rating] || 0) + 1
+                    }
+                })
+
+                Object.keys(ratingDistribution).forEach((key) => {
+                    const rating = Number(key)
+                    const count = ratingDistribution[rating] || 0
+                    ratingDistribution[rating] = Math.round(count / reviews.totalDocs * 100)
+                })
+            }
+
             return {
                 ...product,
                 isPurchased,
                 image: product.image as Media | null,
-                tenant: product.tenant as Tenant & { image: Media | null }
+                tenant: product.tenant as Tenant & { image: Media | null },
+                reviewRating,
+                reviewCount: reviews.totalDocs,
+                ratingDistribution,
             }
         }),
     getMany: baseProcedure
@@ -162,9 +202,30 @@ export const productsRouter = createTRPCRouter({
                 limit: input.limit
             })
 
+            const dataWithSummarisedReviews = await Promise.all(
+                data.docs.map(async (doc) => {
+                    const reviewsData = await ctx.payload.find({
+                        collection: "reviews",
+                        pagination: false,
+                        where: {
+                            product: {
+                                equals: doc.id
+                            }
+                        }
+                    })
+
+                    return {
+                        ...doc,
+                        reviewCount: reviewsData.totalDocs,
+                        reviewRating: averageReviewRating(reviewsData.docs)
+                    }
+
+                })
+            )
+
             return {
                 ...data,
-                docs: data.docs.map((doc) => ({
+                docs: dataWithSummarisedReviews.map((doc) => ({
                     ...doc,
                     image: doc.image as Media | null,
                     tenant: doc.tenant as Tenant & { image: Media | null }
