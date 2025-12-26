@@ -2,17 +2,18 @@
 
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { LinkIcon, StarIcon } from "lucide-react";
+import { CheckIcon, LinkIcon, StarIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import { Fragment, useState } from "react";
+import { toast } from "sonner";
 
 import { StarRating } from "@/components/star-rating";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency, generateTenantUrl } from "@/lib/utils";
-import { Fragment } from "react";
 
 const CartButton = dynamic(
     () => import("../components/cart-button").then(
@@ -31,6 +32,8 @@ interface Props {
 }
 
 export const ProductView = ({ productId, tenantSlug }: Props) => {
+
+    const [isCopied, setIsCopied] = useState(false);
 
     const trpc = useTRPC()
     const { data } = useSuspenseQuery(trpc.products.getOne.queryOptions({
@@ -80,23 +83,26 @@ export const ProductView = ({ productId, tenantSlug }: Props) => {
                                 </Link>
                             </div>
                             <div className="hidden lg:flex px-6 py-4 items-center justify-center">
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-2">
                                     <StarRating
-                                        rating={4}
+                                        rating={data.reviewRating}
                                         iconClassName="size-4"
                                     />
+                                    <p className="text-base font-medium">
+                                        {data.reviewCount} ratings
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="block lg:hidden px-6 py-4 items-center justify-center border-b">
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-2">
                                 <StarRating
-                                    rating={4}
+                                    rating={data.reviewRating}
                                     iconClassName="size-4"
                                 />
                                 <p className="text-base font-medium">
-                                    {5} ratings
+                                    {data.reviewCount} ratings
                                 </p>
                             </div>
                         </div>
@@ -126,11 +132,17 @@ export const ProductView = ({ productId, tenantSlug }: Props) => {
                                     <Button
                                         className="size-12"
                                         variant="elevated"
-                                        onClick={() => { }}
-                                        disabled={false}
+                                        onClick={() => {
+                                            setIsCopied(true);
+                                            navigator.clipboard.writeText(window.location.href);
+                                            toast.success("Product link copied to clipboard");
+                                            setTimeout(() => setIsCopied(false), 2000);
+                                        }}
+                                        disabled={isCopied}
                                     >
-                                        <LinkIcon
-                                        />
+                                        {isCopied ?
+                                            <CheckIcon />
+                                            : <LinkIcon />}
                                     </Button>
                                 </div>
 
@@ -149,23 +161,23 @@ export const ProductView = ({ productId, tenantSlug }: Props) => {
                                     <div className="flex items-center gap-x-1 font-medium">
                                         <StarIcon className="size-4 fill-black" />
                                         <p>
-                                            ({5})
+                                            ({data.reviewRating})
                                         </p>
-                                        <p className="text-base">{5} ratings</p>
+                                        <p className="text-base">{data.reviewCount} ratings</p>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-[auto_1fr_auto] gap-3 mt-4">
-                                    {[5, 4, 3, 2, 1].map((star) => (
-                                        <Fragment key={star}>
+                                    {[5, 4, 3, 2, 1].map((stars) => (
+                                        <Fragment key={stars}>
                                             <div className="font-medium">
-                                                {star} {star === 1 ? "star" : "stars"}
+                                                {stars} {stars === 1 ? "star" : "stars"}
                                             </div>
                                             <Progress
-                                                value={5}
+                                                value={data.ratingDistribution[stars]}
                                                 className="h-[1lh]"
                                             />
                                             <div className="font-medium">
-                                                {0}%
+                                                {data.ratingDistribution[stars]}%
                                             </div>
                                         </Fragment>
                                     ))}
