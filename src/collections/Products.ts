@@ -1,7 +1,12 @@
 import type { CollectionConfig } from 'payload'
 
+import { isStripeSubmitted } from '@/lib/access'
+
 export const Products: CollectionConfig = {
     slug: "products",
+    access: {
+        create: ({ req: { user } }) => isStripeSubmitted(user)
+    },
     fields: [{
         name: "name",
         type: "text",
@@ -9,6 +14,7 @@ export const Products: CollectionConfig = {
     },
     {
         name: "description",
+        //TODO: Change to Rich Text
         type: "text",
 
     },
@@ -60,6 +66,15 @@ export const Products: CollectionConfig = {
         relationTo: "tags",
         hasMany: true
     },
+    {
+        name: "content",
+        //TODO: Change to Rich Text
+        type: "textarea",
+        admin: {
+            description:
+                "Protected content only visible to customers after purchase. Add product documentation, download files, or any other relevant information. Support Markdown formatting"
+        }
+    }
     ]
 
 }
