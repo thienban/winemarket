@@ -1,7 +1,13 @@
 import type { CollectionConfig } from 'payload'
 
+import { isSuperAdmin } from '@/lib/access'
+
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
+  access: {
+    create: ({ req: { user } }) => isSuperAdmin(user),
+    delete: ({ req: { user } }) => isSuperAdmin(user),
+  },
   admin: {
     useAsTitle: 'slug',
   },
@@ -21,6 +27,9 @@ export const Tenants: CollectionConfig = {
       index: true,
       required: true,
       unique: true,
+      access: {
+        update: ({ req: { user } }) => isSuperAdmin(user),
+      },
       admin: {
         description: "This is the subdomain of the store (e.g [slug].antonio-store)"
       }
