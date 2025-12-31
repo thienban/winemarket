@@ -46,10 +46,18 @@ const ProductView = ({ productId }: Props) => {
                             <ReviewSidebar productId={productId} />
                         </div>
                     </div>
-                    <div className="lg:col-span-2">
-                        <p className="font-medium italic text-muted-foreground">
-                            No special content
-                        </p>
+                    <div className="lg:col-span-5">
+                        {
+                            data.content ? (
+                                <p>
+                                    {data.content}
+                                </p>
+                            ) : (
+                                <p className="font-medium italic text-muted-foreground">
+                                    No special content
+                                </p>
+                            )
+                        }
                     </div>
                 </div>
             </section>
