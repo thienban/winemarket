@@ -6,8 +6,8 @@ import { DEFAULT_LIMIT } from "@/constants";
 import { Category, Media, Tenant } from "@/payload-types";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
-import { sortValues } from "../search-params";
 import { averageReviewRating } from "@/modules/utils/utils";
+import { sortValues } from "../search-params";
 
 export const productsRouter = createTRPCRouter({
     getOne: baseProcedure
@@ -23,7 +23,10 @@ export const productsRouter = createTRPCRouter({
             const product = await ctx.payload.findByID({
                 collection: "products",
                 id: input.id,
-                depth: 2
+                depth: 2,
+                select: {
+                    content: false
+                }
             })
 
             let isPurchased = false
@@ -199,7 +202,10 @@ export const productsRouter = createTRPCRouter({
                 where,
                 sort,
                 page: input.cursor,
-                limit: input.limit
+                limit: input.limit,
+                select: {
+                    content: false
+                }
             })
 
             const dataWithSummarisedReviews = await Promise.all(
