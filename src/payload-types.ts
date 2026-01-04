@@ -252,6 +252,10 @@ export interface Product {
    * Protected content only visible to customers after purchase. Add product documentation, download files, or any other relevant information. Support Markdown formatting
    */
   content?: string | null;
+  /**
+   * If checked, this product will be archived
+   */
+  isArchived?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -457,6 +461,7 @@ export interface ProductsSelect<T extends boolean = true> {
   refundPolicy?: T;
   tags?: T;
   content?: T;
+  isArchived?: T;
   updatedAt?: T;
   createdAt?: T;
 }
