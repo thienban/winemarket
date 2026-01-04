@@ -7,6 +7,10 @@ export const Products: CollectionConfig = {
     access: {
         create: ({ req: { user } }) => isStripeSubmitted(user)
     },
+    admin: {
+        useAsTitle: "name",
+        description: "You must verify your account before creating products"
+    },
     fields: [{
         name: "name",
         type: "text",
