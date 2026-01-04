@@ -39,7 +39,8 @@ export async function POST(reg: Request) {
     console.log("Success", event.id)
 
     const permittedEvents: string[] = [
-        "checkout.session.completed"
+        "checkout.session.completed",
+        "account.updated"
     ]
 
     const payload = await getPayload({ config })
@@ -85,12 +86,29 @@ export async function POST(reg: Request) {
                             collection: "orders",
                             data: {
                                 stripeCheckoutSessionId: data.id,
+                                stripeAccountId: event.account,
                                 user: user.id,
                                 product: item.price.product.metadata.id,
                                 name: item.price.product.name
                             }
                         })
                     }
+                    break
+
+                case "account.updated":
+                    data = event.data.object as Stripe.Account
+
+                    await payload.update({
+                        collection: "tenants",
+                        where: {
+                            stripeAccountId: {
+                                equals: data.id
+                            }
+                        },
+                        data: {
+                            stripeDetailsSubmitted: data.details_submitted
+                        }
+                    })
                     break
 
                 default:
