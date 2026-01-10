@@ -19,8 +19,7 @@ export const Products: CollectionConfig = {
     },
     {
         name: "description",
-        //TODO: Change to Rich Text
-        type: "text",
+        type: "richText",
 
     },
     {
@@ -73,8 +72,7 @@ export const Products: CollectionConfig = {
     },
     {
         name: "content",
-        //TODO: Change to Rich Text
-        type: "textarea",
+        type: "richText",
         admin: {
             description:
                 "Protected content only visible to customers after purchase. Add product documentation, download files, or any other relevant information. Support Markdown formatting"
@@ -89,7 +87,7 @@ export const Products: CollectionConfig = {
             description: "If checked, this product will be archived"
         }
     },
-        {
+    {
         name: "isPrivate",
         label: "Private",
         defaultValue: false,

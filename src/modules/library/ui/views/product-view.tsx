@@ -1,9 +1,11 @@
 "use client"
 
 import { useTRPC } from "@/trpc/client"
+import { RichText } from "@payloadcms/richtext-lexical/react"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { ArrowLeftIcon } from "lucide-react"
 import Link from "next/link"
+
 import ReviewSidebar from "./review-sidebar"
 
 
@@ -50,7 +52,7 @@ const ProductView = ({ productId }: Props) => {
                         {
                             data.content ? (
                                 <p>
-                                    {data.content}
+                                    <RichText data={data.content} />
                                 </p>
                             ) : (
                                 <p className="font-medium italic text-muted-foreground">
