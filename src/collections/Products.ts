@@ -1,11 +1,12 @@
 import type { CollectionConfig } from 'payload'
 
-import { isStripeSubmitted } from '@/lib/access'
+import { isStripeSubmitted, isSuperAdmin } from '@/lib/access'
 
 export const Products: CollectionConfig = {
     slug: "products",
     access: {
-        create: ({ req: { user } }) => isStripeSubmitted(user)
+        create: ({ req: { user } }) => isStripeSubmitted(user),
+        delete: ({ req: { user } }) => isSuperAdmin(user),
     },
     admin: {
         useAsTitle: "name",
@@ -18,8 +19,7 @@ export const Products: CollectionConfig = {
     },
     {
         name: "description",
-        //TODO: Change to Rich Text
-        type: "text",
+        type: "richText",
 
     },
     {
@@ -72,13 +72,31 @@ export const Products: CollectionConfig = {
     },
     {
         name: "content",
-        //TODO: Change to Rich Text
-        type: "textarea",
+        type: "richText",
         admin: {
             description:
                 "Protected content only visible to customers after purchase. Add product documentation, download files, or any other relevant information. Support Markdown formatting"
         }
+    },
+    {
+        name: "isArchived",
+        label: "Archive",
+        defaultValue: false,
+        type: "checkbox",
+        admin: {
+            description: "If checked, this product will be archived"
+        }
+    },
+    {
+        name: "isPrivate",
+        label: "Private",
+        defaultValue: false,
+        type: "checkbox",
+        admin: {
+            description: "If checked, this product will not be shown on the public storefront"
+        }
     }
+
     ]
 
 }

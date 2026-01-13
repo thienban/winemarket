@@ -8,6 +8,7 @@ import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
 import { averageReviewRating } from "@/modules/utils/utils";
 import { sortValues } from "../search-params";
+import { TRPCError } from "@trpc/server";
 
 export const productsRouter = createTRPCRouter({
     getOne: baseProcedure
@@ -28,6 +29,10 @@ export const productsRouter = createTRPCRouter({
                     content: false
                 }
             })
+
+            if(product.isArchived) {
+                throw new TRPCError({ code: "NOT_FOUND", message: "Product not found" })
+            }
 
             let isPurchased = false
 
@@ -115,7 +120,11 @@ export const productsRouter = createTRPCRouter({
             })
         ).query(async ({ ctx, input }) => {
 
-            const where: Where = {}
+            const where: Where = {
+                isArchived: {
+                    not_equals: true
+                }
+            }
 
             let sort: Sort = "-createdAt"
 
@@ -151,6 +160,13 @@ export const productsRouter = createTRPCRouter({
             if (input.tenantSlug) {
                 where["tenant.slug"] = {
                     equals: input.tenantSlug
+                }
+            } else {
+                //if we are loading products for public storefront (no tenantSlug)
+                //Make sure to not load products set to "isPrivate: true"
+                //these product are exclusively private to the tenant store
+                where["isPrivate"] = {
+                    not_equals: true
                 }
             }
 

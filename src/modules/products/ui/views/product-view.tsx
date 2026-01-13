@@ -1,6 +1,7 @@
 "use client"
 
 import { useTRPC } from "@/trpc/client";
+import { RichText } from "@payloadcms/richtext-lexical/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { CheckIcon, LinkIcon, StarIcon } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -110,7 +111,7 @@ export const ProductView = ({ productId, tenantSlug }: Props) => {
                         <div className="p-6">
                             {data.description ? (
                                 <p className="text-base font-medium">
-                                    {data.description}
+                                    <RichText data={data.description} />
                                 </p>
                             ) : (
                                 <p className="font-medium text-muted-foreground italic">
@@ -185,6 +186,23 @@ export const ProductView = ({ productId, tenantSlug }: Props) => {
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export const ProductViewSkeleton = () => {
+    return (
+        <div className="px-4 lg:px-12 py-10">
+            <div className="border rounded-sm bg-white overflow-hidden">
+                <div className="relative aspect-[3.9] border-b">
+                    <Image
+                        src="/placeholder.png"
+                        alt="Placeholder"
+                        fill
+                        className="object-cover"
+                    />
                 </div>
             </div>
         </div>
